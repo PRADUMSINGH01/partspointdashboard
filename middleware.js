@@ -12,7 +12,7 @@ export function middleware(req) {
 
   if (!token) {
     const url = req.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/Login'
     return NextResponse.redirect(url)
   }
 
@@ -23,7 +23,7 @@ export function middleware(req) {
   } catch (err) {
     // invalid or expired token
     const url = req.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/Login'
     return NextResponse.redirect(url)
   }
 }
@@ -31,6 +31,7 @@ export function middleware(req) {
 // Apply middleware only to the paths you want to protect
 export const config = {
   matcher: [
+    "/",
     '/dashboard/:path*',
     '/account/:path*',
     '/protected/:path*'

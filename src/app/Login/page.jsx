@@ -100,7 +100,7 @@ const onSubmit = async (e) => {
 };
 
     return (
-        <main className="wrap">
+        <main className="wrap text-black">
             <section className="card" aria-labelledby="login-title">
                 <div className="brand">
                     <svg className="logo" viewBox="0 0 24 24" aria-hidden="true">
