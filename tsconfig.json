@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/DashboardLayout.jsx", "src/components/SalesSection.jsx", "src/components/InventorySection.jsx", "src/components/PurchaseSection.jsx", "src/components/InvoiceSection.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/DashboardLayout.jsx", "src/components/SalesSection.jsx", "src/components/InventorySection.jsx", "src/components/PurchaseSection.jsx", "src/components/InvoiceSection.jsx", "src/components/AddProductButton.jsx"],
   "exclude": ["node_modules"]
 }

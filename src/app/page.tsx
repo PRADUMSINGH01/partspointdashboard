@@ -14,28 +14,7 @@ export default function Dashboard() {
 
 console.log(process.env.CLI)
 
-  const sampleInvoice = {
-  company: {
-    name: "Pradum Pvt Ltd",
-    address: "123 Business Street, Delhi, India",
-    email: "contact@pradum.com",
-    phone: "+91 7270854122",
-  },
-  client: {
-    name: "Rahul Sharma",
-    address: "56 Client Road, Mumbai, India",
-    email: "rahul@example.com",
-  },
-  invoiceNumber: "INV-2025-001",
-  date: "27-08-2025",
-  dueDate: "05-09-2025",
-  taxRate: 18,
-  items: [
-    { description: "Web Design Services", quantity: 1, price: 15000 },
-    { description: "Hosting (1 year)", quantity: 1, price: 3000 },
-    { description: "Domain Name", quantity: 1, price: 800 },
-  ],
-};
+
   const renderContent = () => {
     switch (activeTab) {
       case 'sales':

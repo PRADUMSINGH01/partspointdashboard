@@ -3,22 +3,10 @@
 import React, { useState } from "react";
 import { FiX, FiUpload, FiImage } from "react-icons/fi";
 
-type ProductForm = {
-  sku: string;
-  name: string;
-  imageUrl: string;
-  stock: number | "";
-  date: string;
-};
-
-type Props = {
-  onSave?: (data: ProductForm) => Promise<void> | void;
-};
-
-export default function AddProductModal({ onSave }: Props) {
+export default function AddProductModal({ onSave }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<ProductForm>({
+  const [form, setForm] = useState({
     sku: "",
     name: "",
     imageUrl: "",
@@ -26,17 +14,18 @@ export default function AddProductModal({ onSave }: Props) {
     date: "",
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((p) => ({ ...p, [name]: name === "stock" ? (value === "" ? "" : Number(value)) : value } as ProductForm));
+    setForm((p) => ({
+      ...p,
+      [name]: name === "stock" ? (value === "" ? "" : Number(value)) : value,
+    }));
   };
 
   const reset = () =>
     setForm({ sku: "", name: "", imageUrl: "", stock: "", date: "" });
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault();
     // basic validation
     if (!form.sku.trim() || !form.name.trim() || form.stock === "") {
@@ -92,8 +81,12 @@ export default function AddProductModal({ onSave }: Props) {
                   <FiImage className="text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-blue-700">Add New Product</h3>
-                  <p className="text-sm text-gray-500">Add SKU, images, stock & publish date</p>
+                  <h3 className="text-lg font-semibold text-blue-700">
+                    Add New Product
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Add SKU, images, stock & publish date
+                  </p>
                 </div>
               </div>
 
@@ -107,34 +100,55 @@ export default function AddProductModal({ onSave }: Props) {
             </div>
 
             {/* Body */}
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+            <form
+              onSubmit={handleSubmit}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6"
+            >
               {/* LEFT: Preview */}
               <div className="flex flex-col gap-4">
                 <div className="flex-1 border border-gray-100 rounded-lg p-4 flex items-center justify-center bg-white">
                   {previewImageValid ? (
-                    // image preview
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={form.imageUrl}
                       alt={form.name || form.sku || "preview"}
                       className="max-h-64 object-contain rounded-md"
-                      onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+                      onError={(e) => (e.target.style.display = "none")}
                     />
                   ) : (
                     <div className="text-center text-gray-300">
                       <FiImage size={48} />
                       <p className="mt-2 text-sm">Image preview</p>
-                      <p className="mt-1 text-xs">Add a valid image URL to preview</p>
+                      <p className="mt-1 text-xs">
+                        Add a valid image URL to preview
+                      </p>
                     </div>
                   )}
                 </div>
 
                 <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
                   <p className="text-xs text-gray-500">Live preview</p>
-                  <h4 className="mt-1 font-semibold text-blue-800 truncate">{form.name || "Product name"}</h4>
-                  <p className="text-sm text-gray-600">SKU: <span className="font-medium text-gray-800">{form.sku || "-"}</span></p>
-                  <p className="text-sm text-gray-600">Stock: <span className="font-medium text-gray-800">{form.stock === "" ? "-" : form.stock}</span></p>
-                  <p className="text-sm text-gray-600">Date: <span className="font-medium text-gray-800">{form.date || "-"}</span></p>
+                  <h4 className="mt-1 font-semibold text-blue-800 truncate">
+                    {form.name || "Product name"}
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    SKU:{" "}
+                    <span className="font-medium text-gray-800">
+                      {form.sku || "-"}
+                    </span>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Stock:{" "}
+                    <span className="font-medium text-gray-800">
+                      {form.stock === "" ? "-" : form.stock}
+                    </span>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Date:{" "}
+                    <span className="font-medium text-gray-800">
+                      {form.date || "-"}
+                    </span>
+                  </p>
                 </div>
 
                 <div className="flex gap-3">
@@ -142,8 +156,13 @@ export default function AddProductModal({ onSave }: Props) {
                     type="button"
                     className="flex-1 inline-flex items-center justify-center gap-2 py-2 rounded-lg border border-blue-600 text-blue-600 font-medium hover:bg-blue-50"
                     onClick={() => {
-                      // quick fill example (useful for demo)
-                      setForm({ sku: "SKU-001", name: "Sample Model X", imageUrl: "", stock: 10, date: "" });
+                      setForm({
+                        sku: "SKU-001",
+                        name: "Sample Model X",
+                        imageUrl: "",
+                        stock: 10,
+                        date: "",
+                      });
                     }}
                   >
                     Quick Fill
@@ -153,8 +172,14 @@ export default function AddProductModal({ onSave }: Props) {
                     type="button"
                     className="flex-1 inline-flex items-center justify-center gap-2 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
                     onClick={() => {
-                      navigator.clipboard && form.imageUrl ? navigator.clipboard.writeText(form.imageUrl) : null;
-                      alert(form.imageUrl ? "Image URL copied" : "No image URL to copy");
+                      navigator.clipboard && form.imageUrl
+                        ? navigator.clipboard.writeText(form.imageUrl)
+                        : null;
+                      alert(
+                        form.imageUrl
+                          ? "Image URL copied"
+                          : "No image URL to copy"
+                      );
                     }}
                   >
                     Copy Image URL
@@ -165,7 +190,9 @@ export default function AddProductModal({ onSave }: Props) {
               {/* RIGHT: Form */}
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product SKU</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Product SKU
+                  </label>
                   <input
                     name="sku"
                     value={form.sku}
@@ -176,7 +203,9 @@ export default function AddProductModal({ onSave }: Props) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Product Name
+                  </label>
                   <input
                     name="name"
                     value={form.name}
@@ -187,7 +216,9 @@ export default function AddProductModal({ onSave }: Props) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Image URL
+                  </label>
                   <input
                     name="imageUrl"
                     value={form.imageUrl}
@@ -199,19 +230,23 @@ export default function AddProductModal({ onSave }: Props) {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Stock
+                    </label>
                     <input
                       name="stock"
                       type="number"
                       min={0}
-                      value={form.stock as any}
+                      value={form.stock}
                       onChange={handleChange}
                       className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date
+                    </label>
                     <input
                       name="date"
                       type="date"
@@ -233,7 +268,7 @@ export default function AddProductModal({ onSave }: Props) {
 
                   <button
                     type="submit"
-                    onClick={(e) => handleSubmit(e as any)}
+                    onClick={(e) => handleSubmit(e)}
                     disabled={loading}
                     className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-medium shadow hover:bg-blue-700 disabled:opacity-60"
                   >
@@ -241,7 +276,9 @@ export default function AddProductModal({ onSave }: Props) {
                   </button>
                 </div>
 
-                <p className="text-xs text-gray-400 mt-2">* Fields SKU, Name and Stock are required.</p>
+                <p className="text-xs text-gray-400 mt-2">
+                  * Fields SKU, Name and Stock are required.
+                </p>
               </div>
             </form>
           </div>
