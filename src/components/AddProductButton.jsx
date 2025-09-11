@@ -1,11 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { FiX, FiUpload, FiImage } from "react-icons/fi";
 
 export default function AddProductModal({ onSave }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadFileName, setUploadFileName] = useState("");
+  const fileInputRef = useRef(null);
+
   const [form, setForm] = useState({
     sku: "",
     name: "",
@@ -25,27 +29,83 @@ export default function AddProductModal({ onSave }) {
   const reset = () =>
     setForm({ sku: "", name: "", imageUrl: "", stock: "", date: "" });
 
-  const handleSubmit = async (e) => {
-    e?.preventDefault();
-    // basic validation
-    if (!form.sku.trim() || !form.name.trim() || form.stock === "") {
-      alert("Please fill SKU, Name and Stock.");
-      return;
+const handleSubmit = async (e) => {
+  e?.preventDefault();
+
+  if (!form.sku.trim() || !form.name.trim() || form.stock === "") {
+    alert("Please fill SKU, Name and Stock.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    // Call Next.js API to add product
+    const res = await fetch("/api/Products/AddProduct", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to add product");
     }
 
+    console.log("✅ Product added:", data);
+
+    alert("Product added successfully!");
+    setOpen(false);
+    reset();
+  } catch (err) {
+    console.error("❌ API Error:", err);
+    alert("Failed to save product: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // Upload function
+  async function uploadImage(file) {
     try {
-      setLoading(true);
-      if (onSave) await onSave(form);
-      else console.log("Save product ->", form);
-      setOpen(false);
-      reset();
+      setUploading(true);
+      setUploadFileName(file.name);
+
+      const fd = new FormData();
+      fd.append("image", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: fd,
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "Upload failed");
+
+      // set the returned URL into form.imageUrl
+      setForm((p) => ({ ...p, imageUrl: json.url }));
+      return json;
     } catch (err) {
-      console.error(err);
-      alert("Failed to save product");
+      console.error("Upload failed:", err);
+      alert("Image upload failed: " + err.message);
+      return null;
     } finally {
-      setLoading(false);
+      setUploading(false);
     }
+  }
+
+  const onPickFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadImage(file);
+    // clear input so same file can be picked again if needed
+    e.target.value = "";
   };
+
+  const triggerFilePicker = () => fileInputRef.current?.click();
 
   const previewImageValid = form.imageUrl && form.imageUrl.startsWith("http");
 
@@ -119,9 +179,7 @@ export default function AddProductModal({ onSave }) {
                     <div className="text-center text-gray-300">
                       <FiImage size={48} />
                       <p className="mt-2 text-sm">Image preview</p>
-                      <p className="mt-1 text-xs">
-                        Add a valid image URL to preview
-                      </p>
+                      <p className="mt-1 text-xs">Add a valid image URL to preview</p>
                     </div>
                   )}
                 </div>
@@ -133,9 +191,7 @@ export default function AddProductModal({ onSave }) {
                   </h4>
                   <p className="text-sm text-gray-600">
                     SKU:{" "}
-                    <span className="font-medium text-gray-800">
-                      {form.sku || "-"}
-                    </span>
+                    <span className="font-medium text-gray-800">{form.sku || "-"}</span>
                   </p>
                   <p className="text-sm text-gray-600">
                     Stock:{" "}
@@ -145,9 +201,7 @@ export default function AddProductModal({ onSave }) {
                   </p>
                   <p className="text-sm text-gray-600">
                     Date:{" "}
-                    <span className="font-medium text-gray-800">
-                      {form.date || "-"}
-                    </span>
+                    <span className="font-medium text-gray-800">{form.date || "-"}</span>
                   </p>
                 </div>
 
@@ -175,15 +229,40 @@ export default function AddProductModal({ onSave }) {
                       navigator.clipboard && form.imageUrl
                         ? navigator.clipboard.writeText(form.imageUrl)
                         : null;
-                      alert(
-                        form.imageUrl
-                          ? "Image URL copied"
-                          : "No image URL to copy"
-                      );
+                      alert(form.imageUrl ? "Image URL copied" : "No image URL to copy");
                     }}
                   >
                     Copy Image URL
                   </button>
+                </div>
+
+                {/* Upload controls */}
+                <div className="flex gap-3 items-center">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={onPickFile}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={triggerFilePicker}
+                    className="inline-flex items-center gap-2 py-2 px-3 rounded-lg bg-white border border-gray-200 hover:bg-gray-50"
+                  >
+                    <FiUpload />
+                    {uploading ? "Uploading..." : "Upload Image"}
+                  </button>
+
+                  <div className="text-sm text-gray-600">
+                    {uploading ? (
+                      <span>Uploading: {uploadFileName}</span>
+                    ) : form.imageUrl ? (
+                      <span className="truncate">Uploaded: {form.imageUrl}</span>
+                    ) : (
+                      <span>No image uploaded</span>
+                    )}
+                  </div>
                 </div>
               </div>
 

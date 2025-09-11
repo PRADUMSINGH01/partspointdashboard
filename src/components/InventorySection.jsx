@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect,useMemo } from "react";
 
 /**
  * NOTE: This component expects Tailwind CSS to be configured in your project.
@@ -18,7 +18,7 @@ const mockProducts = [
 ];
 
 export default function App() {
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
 
   // Modal states
@@ -27,6 +27,25 @@ export default function App() {
   const [selectedSku, setSelectedSku] = useState(null);
   const [newStock, setNewStock] = useState("");
 
+
+  useEffect(() => {    // Fetch products from API (replace with real API call)
+    async function fetchProducts() {
+      try {     
+        const res = await fetch('/api/Products');
+
+        const data = await res.json();
+        if (res.ok) {
+          setProducts(data.products || []);   
+          
+        } else {
+          console.error('Failed to fetch products:', data.error);
+        } 
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    }
+    fetchProducts();
+  }, []);
   // Filtered list
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
@@ -153,7 +172,7 @@ export default function App() {
                           </div>
                         </td>
 
-                        <td className="px-6 py-4 align-middle text-sm text-gray-800">${prod.price.toFixed(2)}</td>
+                        <td className="px-6 py-4 align-middle text-sm text-gray-800">{prod.price}</td>
 
                         <td className="px-6 py-4 align-middle text-right">
                           <div className="inline-flex gap-2">
