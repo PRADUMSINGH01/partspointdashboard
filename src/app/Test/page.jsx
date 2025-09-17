@@ -1,5 +1,5 @@
 // utils/auth.js
-import bcrypt from 'bcryptjs'
+import bcrypt from "bcryptjs";
 
 /**
  * Generate a bcrypt hash for a plain-text password.
@@ -8,19 +8,19 @@ import bcrypt from 'bcryptjs'
  * @returns {Promise<string>} - bcrypt hash (store this in DB)
  */
 export async function generatePasswordHash(password, saltRounds = 12) {
-  if (typeof password !== 'string' || password.length === 0) {
-    throw new Error('Password must be a non-empty string')
+  if (typeof password !== "string" || password.length === 0) {
+    throw new Error("Password must be a non-empty string");
   }
 
   // Optionally enforce a minimum length
   if (password.length < 6) {
-    throw new Error('Password must be at least 6 characters long')
+    throw new Error("Password must be at least 6 characters long");
   }
 
   // Generate salt and hash
-  const salt = await bcrypt.genSalt(saltRounds)
-  const hash = await bcrypt.hash(password, salt)
-  return hash
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hash = await bcrypt.hash(password, salt);
+  return hash;
 }
 
 /**
@@ -30,25 +30,20 @@ export async function generatePasswordHash(password, saltRounds = 12) {
  * @returns {Promise<boolean>}
  */
 
-import AddProductModal from '@/components/AddProductButton'
 export async function verifyPassword(password, storedHash) {
-  if (!password || !storedHash) return false
-  return await bcrypt.compare(password, storedHash)
+  if (!password || !storedHash) return false;
+  return await bcrypt.compare(password, storedHash);
 }
 
+async function Page() {
+  const res = generatePasswordHash("chandan@123");
 
- async function  Page() {
-
-    const res = await fetch('http://localhost:3000/api/Products', { cache: 'no-store' }).then(res => res.json()   )
-    console.log('Generated hash:', res)
   return (
     <div>
       <h1>Test Page</h1>
-      <p>This is a test page.</p>
-      <AddProductModal />
+      <p>This is a test page. {res}</p>
     </div>
-  )
-}               
+  );
+}
 
-
-export default Page
+export default Page;
