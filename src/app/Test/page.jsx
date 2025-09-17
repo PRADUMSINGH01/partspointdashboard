@@ -1,38 +1,15 @@
-// utils/auth.js
+// utils/generatePassword.js
 import bcrypt from "bcryptjs";
 
 /**
- * Generate a bcrypt hash for a plain-text password.
- * @param {string} password - Plain text password
- * @param {number} [saltRounds=12] - Work factor (10-12 is common; higher is stronger but slower)
- * @returns {Promise<string>} - bcrypt hash (store this in DB)
+ * Generate a bcrypt-hashed password for storing in Firestore
+ * @param {string} plainPassword - The raw password user provides
+ * @returns {Promise<string>} - The hashed password
  */
-export async function generatePasswordHash(password, saltRounds = 12) {
-  if (typeof password !== "string" || password.length === 0) {
-    throw new Error("Password must be a non-empty string");
-  }
-
-  // Optionally enforce a minimum length
-  if (password.length < 6) {
-    throw new Error("Password must be at least 6 characters long");
-  }
-
-  // Generate salt and hash
-  const salt = await bcrypt.genSalt(saltRounds);
-  const hash = await bcrypt.hash(password, salt);
-  return hash;
-}
-
-/**
- * Verify password against stored hash
- * @param {string} password - Plain text password to check
- * @param {string} storedHash - bcrypt hash from DB
- * @returns {Promise<boolean>}
- */
-
-export async function verifyPassword(password, storedHash) {
-  if (!password || !storedHash) return false;
-  return await bcrypt.compare(password, storedHash);
+export async function generatePasswordHash(plainPassword) {
+  const saltRounds = 10; // adjust cost factor if needed
+  const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+  return hashedPassword;
 }
 
 async function Page() {
