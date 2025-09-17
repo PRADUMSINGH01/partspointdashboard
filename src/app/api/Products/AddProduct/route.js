@@ -9,8 +9,8 @@ export async function POST(req) {
     // Accept both old `name` and new `title` fields
     const {
       sku,
-      name,       // legacy
-      title,      // new
+      name, // legacy
+      title, // new
       brandName,
       model,
       category,
@@ -29,7 +29,13 @@ export async function POST(req) {
     const productTitle = (title || name || "").toString().trim();
 
     // Required validation
-    if (!sku || !productTitle || stock === undefined || stock === null || stock === "") {
+    if (
+      !sku ||
+      !productTitle ||
+      stock === undefined ||
+      stock === null ||
+      stock === ""
+    ) {
       return NextResponse.json(
         { error: "SKU, Title/Name and Stock are required" },
         { status: 400 }
@@ -38,7 +44,7 @@ export async function POST(req) {
 
     // Optional uniqueness check for SKU (returns 409 if already exists)
     const existing = await adminDb
-      .collection("Products")
+      .collection("products")
       .where("sku", "==", sku)
       .limit(1)
       .get();
@@ -52,10 +58,14 @@ export async function POST(req) {
 
     // Normalize numeric fields
     const normalizedStock = Number(stock);
-    const normalizedMrp = mrp === "" || mrp === null || mrp === undefined ? null : Number(mrp);
-    const normalizedDiscounted = discountedPrice === "" || discountedPrice === null || discountedPrice === undefined
-      ? null
-      : Number(discountedPrice);
+    const normalizedMrp =
+      mrp === "" || mrp === null || mrp === undefined ? null : Number(mrp);
+    const normalizedDiscounted =
+      discountedPrice === "" ||
+      discountedPrice === null ||
+      discountedPrice === undefined
+        ? null
+        : Number(discountedPrice);
 
     // Normalize images array (expecting an array of URLs, keep up to 2)
     const imagesArr = Array.isArray(images) ? images.slice(0, 2) : [];
@@ -109,6 +119,9 @@ export async function POST(req) {
     });
   } catch (err) {
     console.error("API Error (Add Product):", err);
-    return NextResponse.json({ error: err.message || "Internal Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Internal Error" },
+      { status: 500 }
+    );
   }
 }
