@@ -1,13 +1,9 @@
 // app/api/upload/route.js
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import { adminDb, adminStorage } from "@/firebase/firebase";
-import * as admin from "firebase-admin"; // ✅ needed for FieldValue
+import { adminStorage } from "@/firebase/firebase";
+import * as admin from "firebase-admin";
 
-/**
- * POST: expects multipart/form-data with field "image"
- * Returns: { success: true, url: "...", fileId: "..." }
- */
 export async function POST(req) {
   try {
     const formData = await req.formData();
@@ -17,43 +13,36 @@ export async function POST(req) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // ✅ Convert File -> Buffer
+    // Convert File -> Buffer
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // ✅ Unique file name
-    const fileName = `images/${uuidv4()}_${file.name}`;
+    // Unique, safe file name (replace spaces)
+    const safeName = (file.name || "upload").replace(/\s+/g, "_");
+    const fileName = `images/${uuidv4()}_${safeName}`;
 
-    // ✅ Save file to Storage
+    // Save file to Storage bucket (adminStorage should be your bucket reference)
     const storageFile = adminStorage.file(fileName);
     await storageFile.save(buffer, {
-      metadata: { contentType: file.type },
+      metadata: { contentType: file.type || "application/octet-stream" },
       resumable: false,
     });
 
-    // ✅ Make file public (you can use signed URL instead if needed)
+    // Make file public (if you prefer signed URLs, see note below)
     await storageFile.makePublic();
 
-    // ✅ Public URL
+    // Public URL
     const publicUrl = `https://storage.googleapis.com/${adminStorage.name}/${fileName}`;
 
-    // ✅ Save metadata to Firestore
-    const docRef = await adminDb.collection("Products").add({
-      name: file.name,
-      path: fileName,
-      url: publicUrl,
-      contentType: file.type || null,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
+    // Return only the URL (no Firestore writes)
     return NextResponse.json({
       success: true,
-      fileId: docRef.id,
       url: publicUrl,
+      fileName,
     });
   } catch (err) {
     console.error("API Upload Error:", err);
     return NextResponse.json(
-      { error: err.message || "Upload failed" },
+      { error: err?.message || "Upload failed" },
       { status: 500 }
     );
   }

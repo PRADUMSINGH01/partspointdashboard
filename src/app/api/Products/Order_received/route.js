@@ -3,7 +3,7 @@ import { adminDb } from "@/firebase/firebase"; // This should be your Firestore 
 
 export async function GET() {
   try {
-    const snapshot = await adminDb.collection("Products").get();
+    const snapshot = await adminDb.collection("orders").get();
     const products = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
