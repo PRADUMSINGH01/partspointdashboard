@@ -21,3 +21,9 @@ export async function generatePasswordHash(plainPassword) {
 export async function verifyPassword(plainPassword, hashedPassword) {
   return await bcrypt.compare(plainPassword, hashedPassword);
 }
+
+const page = () => {
+  return <>Test</>;
+};
+
+export default page;
