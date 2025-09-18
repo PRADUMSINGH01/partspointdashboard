@@ -10,6 +10,21 @@ export default function Page() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Force dark theme while this component is mounted (restores previous value on unmount)
+  useEffect(() => {
+    const prevTheme = document.documentElement.getAttribute("data-theme");
+    document.documentElement.setAttribute("data-theme", "dark");
+    document.documentElement.classList.add("dark-mode-forced");
+    return () => {
+      if (prevTheme) {
+        document.documentElement.setAttribute("data-theme", prevTheme);
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+      document.documentElement.classList.remove("dark-mode-forced");
+    };
+  }, []);
+
   useEffect(() => {
     // restore remembered email (if any)
     try {
@@ -99,7 +114,7 @@ export default function Page() {
   };
 
   return (
-    <main className="wrap text-black bg-black">
+    <main className="wrap" aria-live="polite">
       <section className="card" aria-labelledby="login-title">
         <div className="brand">
           <svg className="logo" viewBox="0 0 24 24" aria-hidden="true">
@@ -222,6 +237,12 @@ export default function Page() {
       </section>
 
       <style jsx>{`
+        /* Ensure form controls, scrollbars, etc. respect dark styling */
+        :root,
+        .dark-mode-forced {
+          color-scheme: dark;
+        }
+
         :root {
           --bg: linear-gradient(135deg, #0f172a 0%, #0b1220 60%);
           --card: #0b1220;
@@ -231,9 +252,11 @@ export default function Page() {
           --error: #ef4444;
           --success: #10b981;
         }
+
         * {
           box-sizing: border-box;
         }
+
         .wrap {
           min-height: 100vh;
           display: flex;
@@ -245,6 +268,7 @@ export default function Page() {
           font-family: Inter, ui-sans-serif, system-ui, -apple-system,
             "Segoe UI", Roboto, "Helvetica Neue", Arial;
         }
+
         .card {
           width: 100%;
           max-width: 420px;
@@ -259,35 +283,43 @@ export default function Page() {
           box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
           backdrop-filter: blur(6px);
         }
+
         .brand {
           text-align: center;
           margin-bottom: 18px;
         }
+
         .logo {
           width: 48px;
           height: 48px;
           color: var(--accent);
           margin: 0 auto 10px;
         }
+
         h1 {
           margin: 0;
           font-size: 20px;
           font-weight: 600;
+          color: #e6eef8;
         }
+
         .subtitle {
           margin: 6px 0 0;
           font-size: 13px;
           color: var(--muted);
         }
+
         .form {
           margin-top: 14px;
         }
+
         .toast {
           padding: 10px 12px;
           border-radius: 8px;
           margin-bottom: 12px;
           font-size: 13px;
         }
+
         .toast.error {
           background: linear-gradient(
             90deg,
@@ -297,6 +329,7 @@ export default function Page() {
           border: 1px solid rgba(239, 68, 68, 0.15);
           color: var(--error);
         }
+
         .toast.success {
           background: linear-gradient(
             90deg,
@@ -311,12 +344,14 @@ export default function Page() {
           display: block;
           margin-bottom: 12px;
         }
+
         .label-text {
           display: block;
           font-size: 13px;
           margin-bottom: 6px;
           color: var(--muted);
         }
+
         .input {
           width: 100%;
           padding: 12px 12px;
@@ -331,10 +366,17 @@ export default function Page() {
           outline: none;
           font-size: 14px;
         }
+
+        /* ensure placeholder is visible in dark */
+        .input::placeholder {
+          color: rgba(230, 238, 248, 0.45);
+        }
+
         .input:focus {
           box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.06);
           border-color: rgba(6, 182, 212, 0.6);
         }
+
         .hint {
           display: block;
           margin-top: 6px;
@@ -347,6 +389,7 @@ export default function Page() {
           gap: 8px;
           align-items: center;
         }
+
         .eye {
           appearance: none;
           border: none;
@@ -358,6 +401,7 @@ export default function Page() {
           font-weight: 600;
           font-size: 13px;
         }
+
         .eye:focus {
           outline: 2px solid rgba(6, 182, 212, 0.12);
         }
@@ -368,6 +412,7 @@ export default function Page() {
           align-items: center;
           margin: 6px 0 16px;
         }
+
         .remember {
           display: flex;
           gap: 8px;
@@ -375,9 +420,14 @@ export default function Page() {
           color: var(--muted);
           font-size: 13px;
         }
+
         .remember input {
           width: 16px;
           height: 16px;
+          accent-color: var(--accent);
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 4px;
+          border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .forgot {
@@ -385,6 +435,7 @@ export default function Page() {
           font-size: 13px;
           text-decoration: none;
         }
+
         .forgot:hover {
           text-decoration: underline;
         }
@@ -405,11 +456,13 @@ export default function Page() {
           font-size: 15px;
           box-shadow: 0 6px 18px rgba(6, 182, 212, 0.12);
         }
+
         .submit:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           box-shadow: none;
         }
+
         .spinner {
           width: 16px;
           height: 16px;
@@ -418,6 +471,7 @@ export default function Page() {
           border-top-color: rgba(255, 255, 255, 0.9);
           animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
           to {
             transform: rotate(360deg);
@@ -432,6 +486,7 @@ export default function Page() {
           color: var(--muted);
           font-size: 13px;
         }
+
         .divider::before,
         .divider::after {
           content: "";
@@ -444,6 +499,7 @@ export default function Page() {
           display: flex;
           gap: 10px;
         }
+
         .social {
           flex: 1;
           display: inline-flex;
@@ -457,11 +513,13 @@ export default function Page() {
           cursor: pointer;
           font-size: 14px;
         }
+
         .social .icon {
           width: 16px;
           height: 16px;
           color: var(--muted);
         }
+
         .social:active {
           transform: translateY(1px);
         }
