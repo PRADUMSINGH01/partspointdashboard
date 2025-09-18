@@ -31,6 +31,7 @@ export async function POST(req) {
     const userDoc = snapshot.docs[0];
     const user = userDoc.data();
     const storedPassword = user.password || "";
+    console.log(storedPassword, "storedPassword");
 
     let passwordMatches = false;
     if (
@@ -40,7 +41,7 @@ export async function POST(req) {
     ) {
       // bcrypt hash
       passwordMatches = await bcrypt.compare(password, storedPassword);
-      console.log(passwordMatches, "server--");
+      console.log(passwordMatches, "passwordMatches--");
     } else {
       // plain-text fallback (not recommended for production)
       passwordMatches = storedPassword === password;
