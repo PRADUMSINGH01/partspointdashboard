@@ -40,6 +40,7 @@ export async function POST(req) {
     ) {
       // bcrypt hash
       passwordMatches = await bcrypt.compare(password, storedPassword);
+      console.log(passwordMatches, "server--");
     } else {
       // plain-text fallback (not recommended for production)
       passwordMatches = storedPassword === password;
