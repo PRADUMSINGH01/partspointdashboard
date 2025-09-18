@@ -7,20 +7,17 @@ import bcrypt from "bcryptjs";
  * @returns {Promise<string>} - The hashed password
  */
 export async function generatePasswordHash(plainPassword) {
-  const saltRounds = 10; // adjust cost factor if needed
+  const saltRounds = 10; // cost factor
   const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
   return hashedPassword;
 }
 
-async function Page() {
-  const res = generatePasswordHash("chandan@123");
-
-  return (
-    <div>
-      <h1>Test Page</h1>
-      <p>This is a test page. {res}</p>
-    </div>
-  );
+/**
+ * Verify a plain password against a hashed password
+ * @param {string} plainPassword - The raw password user provides
+ * @param {string} hashedPassword - The bcrypt hashed password from DB
+ * @returns {Promise<boolean>} - true if valid, false otherwise
+ */
+export async function verifyPassword(plainPassword, hashedPassword) {
+  return await bcrypt.compare(plainPassword, hashedPassword);
 }
-
-export default Page;

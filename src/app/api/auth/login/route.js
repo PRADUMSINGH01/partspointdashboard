@@ -4,7 +4,7 @@ import { adminDb } from "@/firebase/firebase";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
-
+import { verifyPassword } from "../../../Test/page";
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
@@ -40,7 +40,7 @@ export async function POST(req) {
       storedPassword.startsWith("$2y$")
     ) {
       // bcrypt hash
-      passwordMatches = await bcrypt.compare(password, storedPassword);
+      passwordMatches = await verifyPassword(password, storedPassword);
       console.log(passwordMatches, "passwordMatches--");
     } else {
       // plain-text fallback (not recommended for production)
