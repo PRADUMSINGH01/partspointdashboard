@@ -38,11 +38,5 @@ export function middleware(req) {
 
 // Apply middleware only to protected routes
 export const config = {
-  matcher: [
-    "/",
-    "/dashboard/:path*",
-    "/account/:path*",
-    "/protected/:path*",
-    "/Login", // include Login so we can redirect authenticated users away
-  ],
+  matcher: ["/djfef"],
 };
