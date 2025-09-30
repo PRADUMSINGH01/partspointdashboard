@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { FiX, FiUpload, FiImage } from "react-icons/fi";
-
+import { addProductClient } from "@/lib/addproduct";
 export default function AddProductModal({ onSave }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -152,23 +152,17 @@ export default function AddProductModal({ onSave }) {
 
       const payload = { ...form };
 
-      const res = await fetch("/api/Products/AddProduct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await addProductClient(payload);
 
-      const data = await res.json();
+      // const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || "Failed to add product");
+      if (!res.ok) throw new Error(res.error || "Failed to add product");
 
-      console.log("✅ Product added:", data);
+      console.log("✅ Product added:", res);
       alert("Product added successfully!");
       setOpen(false);
       reset();
-      onSave && onSave(data);
+      onSave && onSave(res);
     } catch (err) {
       console.error("❌ API Error:", err);
       alert("Failed to save product: " + err.message);

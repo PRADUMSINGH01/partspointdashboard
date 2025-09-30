@@ -43,18 +43,13 @@ export async function POST(req) {
     }
 
     // Optional uniqueness check for SKU (returns 409 if already exists)
-    const existing = await adminDb
-      .collection("products")
-      .where("sku", "==", sku)
-      .limit(1)
-      .get();
 
-    if (!existing.empty) {
-      return NextResponse.json(
-        { error: "A product with this SKU already exists" },
-        { status: 409 }
-      );
-    }
+    // if (!existing.empty) {
+    //   return NextResponse.json(
+    //     { error: "A product with this SKU already exists" },
+    //     { status: 409 }
+    //   );
+    // }
 
     // Normalize numeric fields
     const normalizedStock = Number(stock);
