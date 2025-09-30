@@ -2,9 +2,7 @@
 import { NextResponse } from "next/server";
 import { adminDb } from "@/firebase/firebase";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
-import { verifyPassword } from "../../../Test/page";
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
