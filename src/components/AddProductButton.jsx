@@ -12,20 +12,21 @@ export default function AddProductModal({ onSave }) {
 
   const [form, setForm] = useState({
     sku: "",
+    id: "",
     partnumber: "",
-    title: "",
-    brandName: "",
+    name: "",
+    brand: "",
     model: "",
     category: "",
     subcategory: "",
     description: "",
-    mrp: "",
-    discountedPrice: "",
+    price: 0,
+    discount: 0,
     stock: "",
     date: "",
-    images: ["", ""], // two images
+    galleryImages: ["", ""], // two images
     compatibility: [{ brand: "", model: "", year: "", engine: "" }],
-    isNew: false,
+    New: false,
   });
 
   const reset = () =>
@@ -49,7 +50,7 @@ export default function AddProductModal({ onSave }) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (name === "isNew") {
+    if (name === "New") {
       setForm((p) => ({ ...p, isNew: checked }));
       return;
     }
@@ -134,7 +135,7 @@ export default function AddProductModal({ onSave }) {
   const validateRequired = () => {
     if (
       !form.sku?.toString().trim() ||
-      !form.title?.toString().trim() ||
+      !form.name?.toString().trim() ||
       form.stock === ""
     ) {
       alert("Please fill SKU, Title and Stock.");
@@ -177,9 +178,9 @@ export default function AddProductModal({ onSave }) {
   // helper to update image URL (used by URL input)
   const handleImageUrlChange = (index, value) => {
     setForm((p) => {
-      const images = [...p.images];
-      images[index] = value;
-      return { ...p, images };
+      const galleryImages = [...p.galleryImages];
+      galleryImages[index] = value;
+      return { ...p, galleryImages };
     });
   };
 
@@ -244,10 +245,10 @@ export default function AddProductModal({ onSave }) {
                       className="border border-gray-100 rounded-lg p-3 flex flex-col items-center"
                     >
                       <div className="w-full h-40 flex items-center justify-center bg-white">
-                        {previewImageValid(form.images[i]) ? (
+                        {previewImageValid(form.galleryImages[i]) ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
-                            src={form.images[i]}
+                            src={form.galleryImages[i]}
                             alt={`img-${i}`}
                             className="max-h-36 object-contain rounded-md"
                             onError={(e) => (e.target.style.display = "none")}
@@ -283,9 +284,9 @@ export default function AddProductModal({ onSave }) {
                           className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer"
                           onClick={() =>
                             setForm((p) => {
-                              const images = [...p.images];
-                              images[i] = "";
-                              return { ...p, images };
+                              const galleryImages = [...p.images];
+                              galleryImages[i] = "";
+                              return { ...p, galleryImages };
                             })
                           }
                         >
@@ -299,7 +300,7 @@ export default function AddProductModal({ onSave }) {
                           Or paste image URL
                         </label>
                         <input
-                          value={form.images[i]}
+                          value={form.galleryImages[i]}
                           onChange={(e) =>
                             handleImageUrlChange(i, e.target.value)
                           }
@@ -313,7 +314,9 @@ export default function AddProductModal({ onSave }) {
                       </div>
 
                       <div className="text-sm text-gray-600 mt-2 truncate w-full text-center">
-                        {form.images[i] ? form.images[i] : "No image"}
+                        {form.galleryImages[i]
+                          ? form.galleryImages[i]
+                          : "No image"}
                       </div>
                     </div>
                   ))}
@@ -322,7 +325,7 @@ export default function AddProductModal({ onSave }) {
                 <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
                   <p className="text-xs text-gray-500">Live preview</p>
                   <h4 className="mt-1 font-semibold text-blue-800 truncate">
-                    {form.title || "Product title"}
+                    {form.name || "Product title"}
                   </h4>
                   <p className="text-sm text-gray-600">
                     SKU:{" "}
@@ -333,7 +336,7 @@ export default function AddProductModal({ onSave }) {
                   <p className="text-sm text-gray-600">
                     Brand:{" "}
                     <span className="font-medium text-gray-800">
-                      {form.brandName || "-"}
+                      {form.brand || "-"}
                     </span>
                   </p>
                   <p className="text-sm text-gray-600">
@@ -417,8 +420,8 @@ export default function AddProductModal({ onSave }) {
                       Title
                     </label>
                     <input
-                      name="title"
-                      value={form.title}
+                      name="name"
+                      value={form.name}
                       onChange={handleChange}
                       placeholder="e.g. Honda Civic 2025"
                       className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -432,8 +435,8 @@ export default function AddProductModal({ onSave }) {
                       Brand Name
                     </label>
                     <input
-                      name="brandName"
-                      value={form.brandName}
+                      name="brand"
+                      value={form.brand}
                       onChange={handleChange}
                       className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
                     />
@@ -458,8 +461,8 @@ export default function AddProductModal({ onSave }) {
                     <div className="flex items-center ml-3">
                       <input
                         type="checkbox"
-                        name="isNew"
-                        checked={form.isNew}
+                        name="New"
+                        checked={form.New}
                         onChange={handleChange}
                         className="h-4 w-4"
                       />
@@ -512,10 +515,10 @@ export default function AddProductModal({ onSave }) {
                       MRP
                     </label>
                     <input
-                      name="mrp"
+                      name="price"
                       type="number"
                       min={0}
-                      value={form.mrp}
+                      value={form.price}
                       onChange={handleChange}
                       className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
                     />
@@ -526,10 +529,10 @@ export default function AddProductModal({ onSave }) {
                       Discounted Price
                     </label>
                     <input
-                      name="discountedPrice"
+                      name="discount"
                       type="number"
                       min={0}
-                      value={form.discountedPrice}
+                      value={form.discount}
                       onChange={handleChange}
                       className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
                     />

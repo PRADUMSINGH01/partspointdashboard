@@ -13,9 +13,11 @@ if (!admin.apps.length) {
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET, // ✅ add Storage bucket
   });
 } else {
-  adminApp = admin.app(); 
+  adminApp = admin.app();
 }
 
 export const adminDb = admin.firestore();
-export const adminAuth = admin.auth();
-export const adminStorage = admin.storage().bucket(process.env.FIREBASE_STORAGE_BUCKET); // ✅ so you can use storage easily
+export const adminAuth = adminApp.auth();
+export const adminStorage = admin
+  .storage()
+  .bucket(process.env.FIREBASE_STORAGE_BUCKET); // ✅ so you can use storage easily
